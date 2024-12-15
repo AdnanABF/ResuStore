@@ -1,0 +1,148 @@
+﻿@model List<ResuStore.Models.UserViewModel>
+@{
+    ViewBag.Title = "Home Page";
+    var userData = Newtonsoft.Json.JsonConvert.SerializeObject(Model);
+}
+<script>
+       var initialUsersData = @Html.Raw(userData);
+</script>
+<main>
+    <section class="row">
+        <h1 id="title">ResuStore - Manage your Users</h1>
+    </section>
+
+    <hr />
+
+    <div class="container">
+        <div class="row gap-2 gap-md-4 userContainerWrap" id="userContainerWrap" data-bind="foreach: users">
+            @*User Tiles*@
+            <div class="userContainer p-0">
+                <div class="userTile" data-bind="click: function(data){$root.showUserDetails(data)}">
+                    <div class="tileImageContainer">
+                        <img class="tileImage" data-bind="attr: { src: ImageUrl, alt: FirstName+LastName }" />
+                    </div>
+                    <div class="tileDataContainer">
+                        <h3 class="tileName">
+                            <span data-bind="text: FirstName"></span>
+                            <span data-bind="text: LastName"></span>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            @*User Tiles End*@
+        </div>
+    </div>
+
+    @*Create User Modal PopUp*@
+    <div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createUserModalLabel">Create New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <div class="userInputContainer">
+                        <form id="createUser" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <label for="firstName" class="form-label">First Name</label><span class="text-danger">*</span>
+                                <input type="text" class="form-control" id="firstName" name="FirstName" data-bind="value: firstName">
+                                <span id="FirstNameError" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lastName" class="form-label">Last Name</label><span class="text-danger">*</span>
+                                <input type="text" class="form-control" id="lastName" name="LastName" data-bind="value: lastName">
+                                <span id="LastNameError" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label><span class="text-danger">*</span>
+                                <input type="email" class="form-control" id="email" name="Email" data-bind="value: email">
+                                <span id="EmailError" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="dateOfBirth" class="form-label">Date of Birth</label><span class="text-danger">*</span>
+                                <input type="date" class="form-control" id="dateOfBirth" name="DateOfBirth" data-bind="value: dateOfBirth">
+                                <span id="DateOfBirthError" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Gender</label><span class="text-danger">*</span>
+                                <div>
+                                    <input class="form-check-input" type="radio" name="Gender" id="male" value="male" data-bind="checked: gender">
+                                    <label class="form-check-label me-3" for="male">Male</label>
+
+                                    <input class="form-check-input" type="radio" name="Gender" id="female" value="female" data-bind="checked: gender">
+                                    <label class="form-check-label me-3" for="female">Female</label>
+
+                                    <input class="form-check-input" type="radio" name="Gender" id="other" value="other" data-bind="checked: gender">
+                                    <label class="form-check-label me-3" for="other">Other</label>
+                                </div>
+                                <span id="GenderError" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="imageFile" class="form-label">Upload user photo</label><span class="text-danger">*</span>
+                                <input type="file" accept="image/*" class="form-control" id="imageFile" name="ImageFile">
+                                <span id="ImageFileError" class="text-danger"></span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bind="click: createUser">Create User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Create User Modal PopUp End*@
+
+    @*User Detail Modal PopUp*@
+    <div class="modal fade" id="userDetailModal" tabindex="-1" role="dialog" aria-labelledby="userDetailModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userDetailModalLabel">User Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <div class="userDetailsContainer" data-bind="with: selectedUser">
+                        <div class="userDetailImgWrap">
+                            <img class="userDetailImg" data-bind="attr: { src: ImageUrl, alt: FirstName+LastName}" />
+                        </div>
+                        <div class="userDetails">
+                            <h2><span data-bind="text: FirstName">First Name</span>&nbsp;<span data-bind="text: LastName">Last Name</span></h2>
+                            <div class="ps-2">
+                                <div class="d-flex align-items-center gap-1 pb-1"><h6><i class="bi bi-envelope"></i> Email : </h6><h6 data-bind="text: Email">Email</h6></div>
+                                <div class="d-flex align-items-center gap-1 pb-1"><h6><i class="bi bi-calendar"></i> D.O.B : </h6><h6 data-bind="text: DateOfBirth">Date of Birth</h6></div>
+                                <div class="d-flex align-items-center gap-1 pb-1 text-capitalize"><h6><i class="bi bi-gender-trans"></i> Gender : </h6><h6 data-bind="text: Gender">Gender</h6></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer userModalFooter">
+                    <button type="button" class="btn btn-danger" id="deleteUserBtn" data-bind="click: deleteUserPopUp"><i class="bi bi-trash"></i> Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                <div class="deleteConfirmation" id="deleteConfirmation" data-bind="with: selectedUser">
+                    <form id="deleteUser" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="Id" data-bind="value: Id"/>
+                    </form>
+                    <div class="d-flex justify-content-center pb-2">
+                        <h5>Are you sure you want to delete this user?</h5>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-secondary" data-bind="click: function(){$('.deleteConfirmation').hide();$('.userModalFooter').show();}">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="deleteConfirm" data-bind="click: $root.deleteUser"><i class="bi bi-trash"></i> Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*User Detail Modal PopUp End*@
+</main>
+
